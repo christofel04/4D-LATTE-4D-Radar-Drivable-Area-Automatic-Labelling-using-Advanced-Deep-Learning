@@ -399,15 +399,56 @@
          </widget>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="horizontalLayout_2">
-          <item>
+         <layout class="QGridLayout" name="gridLayout">
+
+          <item row="0" column="0" columnspan="1" rowspan="2">
+          
+
            <widget class="QLabel" name="qlabel_image">
+           <!--
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            -->
+
+            
+
+            <property name="styleSheet">
+             <string notr="true">background-color:white
+</string>
+            </property>
+            
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="lineWidth">
+             <number>1</number>
+            </property>
+            <property name="midLineWidth">
+             <number>0</number>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+
+          <item row="1" column="0">
+           <widget class="QLabel" name="drivable_area_qlabel_image">
+           <!--
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            -->
             <property name="styleSheet">
              <string notr="true">background-color:white
 </string>
@@ -430,14 +471,16 @@
            </widget>
           </item>
 
-          <item>
-           <widget class="QLabel" name="drivable_area_qlabel_image">
+          <item row="1" column="1">
+           <widget class="QLabel" name="bev_drivable_area_qlabel_image">
+           <!--
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            -->
             <property name="styleSheet">
              <string notr="true">background-color:white
 </string>
@@ -575,6 +618,158 @@ color:white;</string>
             </property>
           </widget>
         </item>
+<!--
+        <item>
+          <widget class="QPushButton" name="fix_holes_DA_label_button">
+            <property name="font">
+            <font>
+              <pointsize>9</pointsize>
+            </font>
+            </property>
+            <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="autoFillBackground">
+            <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+            <string notr="true">background-color: green; /* Blue */
+  padding:10px;
+  color:white;</string>
+            </property>
+            <property name="text">
+            <string>Fix DA Labels</string>
+            </property>
+            <property name="autoDefault">
+            <bool>false</bool>
+            </property>
+            <property name="default">
+            <bool>false</bool>
+            </property>
+            <property name="flat">
+            <bool>false</bool>
+            </property>
+          </widget>
+        </item>
+-->
+<item>
+          <widget class="QPushButton" name="generates_BEV_DA_Label_from_LiDAR">
+            <property name="font">
+            <font>
+              <pointsize>9</pointsize>
+            </font>
+            </property>
+            <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="autoFillBackground">
+            <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+            <string notr="true">background-color: purple; /* Blue */
+  padding:10px;
+  color:white;</string>
+            </property>
+            <property name="text">
+            <string>Generates BEV DA Label</string>
+            </property>
+            <property name="autoDefault">
+            <bool>false</bool>
+            </property>
+            <property name="default">
+            <bool>false</bool>
+            </property>
+            <property name="flat">
+            <bool>false</bool>
+            </property>
+          </widget>
+        </item>
+
+
+        <item>
+          <widget class="QPushButton" name="add_BEV_DA_Label_from_LiDAR">
+            <property name="font">
+            <font>
+              <pointsize>9</pointsize>
+            </font>
+            </property>
+            <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="autoFillBackground">
+            <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+            <string notr="true">background-color: rgb(4, 59, 92); /* Blue */
+  padding:10px;
+  color:white;</string>
+            </property>
+            <property name="text">
+            <string>Add BEV Drivable Area Label</string>
+            </property>
+            <property name="autoDefault">
+            <bool>false</bool>
+            </property>
+            <property name="default">
+            <bool>false</bool>
+            </property>
+            <property name="flat">
+            <bool>false</bool>
+            </property>
+          </widget>
+        </item>
+
+        <item>
+          <widget class="QPushButton" name="delete_BEV_DA_Label_from_LiDAR">
+            <property name="font">
+            <font>
+              <pointsize>9</pointsize>
+            </font>
+            </property>
+            <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="autoFillBackground">
+            <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+            <string notr="true">background-color: rgb(11, 127, 171); /* Blue */
+  padding:10px;
+  color:white;</string>
+            </property>
+            <property name="text">
+            <string>Delete BEV Drivable Area Label</string>
+            </property>
+            <property name="autoDefault">
+            <bool>false</bool>
+            </property>
+            <property name="default">
+            <bool>false</bool>
+            </property>
+            <property name="flat">
+            <bool>false</bool>
+            </property>
+          </widget>
+        </item>
+
 
         <item>
           <widget class="QPushButton" name="save_Drivable_Area_label">

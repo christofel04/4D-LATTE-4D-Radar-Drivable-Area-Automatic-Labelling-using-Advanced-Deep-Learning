@@ -24,6 +24,10 @@ class ImageViewer:
         self.qlabel_image.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
         self.__connectEvents()
 
+        # Variable to show where the image is pressed
+
+        self.pressed = None
+
     def __connectEvents(self):
         # Mouse events
         self.qlabel_image.mousePressEvent = self.mousePressAction
@@ -111,10 +115,10 @@ class ImageViewer:
 
     def mouseMoveAction(self, QMouseEvent):
         x, y = QMouseEvent.pos().x(), QMouseEvent.pos().y()
-        #if self.pressed:
-        dx, dy = x - self.pressed.x(), y - self.pressed.y()         # calculate the drag vector
-        self.position = self.anchor[0] - dx, self.anchor[1] - dy    # update pan position using drag vector
-        self.update()                                               # show the image with udated pan position
+        if self.pressed is not None :
+            dx, dy = x - self.pressed.x(), y - self.pressed.y()         # calculate the drag vector
+            self.position = self.anchor[0] - dx, self.anchor[1] - dy    # update pan position using drag vector
+            self.update()                                               # show the image with udated pan position
 
     def mouseReleaseAction(self, QMouseEvent):
         self.pressed = None                                             # clear the starting point of drag vector
