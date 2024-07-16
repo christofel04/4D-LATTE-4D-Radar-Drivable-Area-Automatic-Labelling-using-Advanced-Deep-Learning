@@ -792,10 +792,10 @@ class Iwindow(QtWidgets.QMainWindow, gui):
                 self.add_bev_drivable_area_start_point = None 
 
                 # Give notification finished predicting Drivable Area Label in Image
-                msg = QtWidgets.QMessageBox()
-                msg.setWindowTitle("Finish Adding BEV Drivable Area Label")
-                msg.setText("Succes adding BEV drivable area label to image" )
-                msg.exec()
+                #msg = QtWidgets.QMessageBox()
+                #msg.setWindowTitle("Finish Adding BEV Drivable Area Label")
+                #msg.setText("Succes adding BEV drivable area label to image" )
+                #msg.exec()
 
         elif self.is_delete_drivable_area_in_bev_drivable_area == True :
 
@@ -834,10 +834,10 @@ class Iwindow(QtWidgets.QMainWindow, gui):
                 self.delete_bev_drivable_area_start_point = None 
 
                 # Give notification finished predicting Drivable Area Label in Image
-                msg = QtWidgets.QMessageBox()
-                msg.setWindowTitle("Finish Deleting BEV Drivable Area Label")
-                msg.setText("Succes deleting specified BEV drivable area label to image" )
-                msg.exec()
+                #msg = QtWidgets.QMessageBox()
+                #msg.setWindowTitle("Finish Deleting BEV Drivable Area Label")
+                #msg.setText("Succes deleting specified BEV drivable area label to image" )
+                #msg.exec()
 
 
     def delete_bev_drivable_area_label_button_clicked(self):
