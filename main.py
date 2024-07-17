@@ -234,6 +234,11 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         self.image_viewer.enablePan(True)
         self.image_viewer.loadImage(self.logs[self.cntr]['path'])
         
+        self.drivable_area_probability_mask_rgb_image = None
+        self.probability_masks = None
+        self.bev_drivable_area_image = None
+        self.bev_drivable_area_label = None 
+        
         self.drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
         self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
         self.items[self.cntr].setSelected(True)
@@ -678,7 +683,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             msg.setText("Finish predicting BEV Drivable Area Label using LiDAR pcd")
             msg.exec()
 
-        self.save_drivable_area_label()
+            self.save_drivable_area_label()
         
         return 
 
