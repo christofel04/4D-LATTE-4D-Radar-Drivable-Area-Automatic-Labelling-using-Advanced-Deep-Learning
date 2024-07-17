@@ -1,0 +1,8 @@
+PyQt5
+opencv-python
+matplotlib
+mahotas
+yaml
+scipy
+torch
+torchvision

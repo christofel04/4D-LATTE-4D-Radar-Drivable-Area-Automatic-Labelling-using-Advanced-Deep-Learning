@@ -36,6 +36,8 @@ os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = QLibraryInfo.location(
 
 DIR_OF_SEGMENT_ANYTHING_MODEL = "/home/ofel04/Downloads/sam_vit_l_0b3195.pth"
 
+FOLDER_OF_ROOT_KRADAR_DATASET = "/home/ofel04/Downloads/"
+
 gui = uic.loadUiType("main.ui")[0]     # load UI file designed in Qt Designer
 VALID_FORMAT = ('.BMP', '.GIF', '.JPG', '.JPEG', '.PNG', '.PBM', '.PGM', '.PPM', '.TIFF', '.XBM')  # Image formats supported by Qt
 
@@ -76,7 +78,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
         # Load camera to LiDAR point cloud transformation matrix from camera clibration parameter
 
-        with open("/home/ofel04/K-Radar/resources/cam_calib/common/cam_front0.yml") as stream:
+        with open("resources/cam_calib/common/cam_front0.yml") as stream:
             try:
                 
                 camera_calibration_parameter = dict( yaml.safe_load(stream))
@@ -172,7 +174,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
             index_of_Kradar_scene_in_camera_image = int( self.folder.split( "/" )[-2][ : -4 ] )
 
-            FOLDER_OF_CAMERA_AND_LIDAR_INFO = "/home/ofel04/Downloads/{}_meta/time_info/".format( index_of_Kradar_scene_in_camera_image )
+            FOLDER_OF_CAMERA_AND_LIDAR_INFO = FOLDER_OF_ROOT_KRADAR_DATASET + "{}_meta/time_info/".format( index_of_Kradar_scene_in_camera_image )
 
             with open( FOLDER_OF_CAMERA_AND_LIDAR_INFO + "cam-front.txt" , "r+" ) as f :
                 
@@ -779,7 +781,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                 new_image_drivable_area_probability_mask_rgb_image = self.bev_drivable_area_image.copy()
 
-                print( "Adding bev drivable area label in image from coordinate : {} to coordinate : {}".format( self.add_bev_drivable_area_start_point , [ actual_x_on_image , actual_y_on_image ]))
+                #print( "Adding bev drivable area label in image from coordinate : {} to coordinate : {}".format( self.add_bev_drivable_area_start_point , [ actual_x_on_image , actual_y_on_image ]))
 
                 new_image_drivable_area_probability_mask_rgb_image = cv2.rectangle(new_image_drivable_area_probability_mask_rgb_image , self.add_bev_drivable_area_start_point, [actual_x_on_image , actual_y_on_image], color, thickness) 
 
@@ -821,7 +823,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                 new_image_drivable_area_probability_mask_rgb_image = self.bev_drivable_area_image.copy()
 
-                print( "Adding bev drivable area label in image from coordinate : {} to coordinate : {}".format( self.add_bev_drivable_area_start_point , [ actual_x_on_image , actual_y_on_image ]))
+                #print( "Adding bev drivable area label in image from coordinate : {} to coordinate : {}".format( self.add_bev_drivable_area_start_point , [ actual_x_on_image , actual_y_on_image ]))
 
                 new_image_drivable_area_probability_mask_rgb_image = cv2.rectangle(new_image_drivable_area_probability_mask_rgb_image , self.delete_bev_drivable_area_start_point, [actual_x_on_image , actual_y_on_image], color, thickness) 
 

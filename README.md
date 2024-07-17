@@ -1,4 +1,4 @@
-# 4D Radar Drivable Area Automatic Labelling Tools using Deep Learning
+# 4D- LATTE : 4D Radar Drivable Area Automatic Labelling Tools using Deep Learning
 
 ![image](./resources/imgs/picture_of_Interface_4D_radar_automatic_labelling_using_deep_learning.png)
 
@@ -27,6 +27,39 @@ The technologies in this repository have been developed by [`AVELab`](http://ave
 <p align="center">
   <img src = "./docs/imgs/zeta_mobility.png" width="60%">
 </p>
+
+## How to Use Automatic Labelling Tools using Deep Learning
+Process of automatic labelling Drivable Area can be seen as below.
+
+1. Download the current repository to download all codes and resource. You can can download the current repository in Linux OS as below.
+
+``git clone https://github.com/christofel04/4D-Radar-Drivable-Area-Automatic-Labelling-using-Advanced-Deep-Learning.git``
+
+2. Then go to directory of 4D Radar Automatic Labelling Tools and install all needed python packages using python package installation (pip) as below.
+
+``sudo pip install -r requirements.txt``
+
+3. Then install Image Segmentation using Deep Learning **Segment-Anything**. You can install the image segmentation using Deep Learning Segment-Anything based on the <a href="https://github.com/facebookresearch/segment-anything"> repository of Segment Anything </a>. Then download the pretrained model of Deep Learning Segment-Anything with large model (***VIT-L Model***).
+
+4. Then download **camera images, LiDAR pcd and meta files** of one K- Radar Dataset scene in one K-Radar Dataset Folder. Example of directoy of K-Radar Dataset Folder can be seen as below.
+
+```
+KRadar_Dataset_Folder
+      ├── 20_cam 
+      ├── 20_lpc
+      ├── 20_meta
+      ├── ...
+```
+
+5. Then run the 4D Radar Automatic Labelling tools using this command.
+
+``python3 main.py``
+
+6. Then press button **Open Folder** in top right corner and open one folder image scene of K-Radar dataset you will label. Make sure 4K- Radar image, LiDAR and calibration folder put in the same directory with 4K- Radar image.
+
+7. You can select image that you will label using **Left** and **Right** buttons or selecting the image in the image list box in below right corner.
+
+8. Then you can make Drivable Area segmentation in the image by selecting Drivable Area in the image by clicking button **Add Attention Point**. 
 
 # K-Radar Dataset
 For the preparation of the dataset and pipeline, please refer to the following document: [Dataset Preparation Guide](/docs/dataset.md).
