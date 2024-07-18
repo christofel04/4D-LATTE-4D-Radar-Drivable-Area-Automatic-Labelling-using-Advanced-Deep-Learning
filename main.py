@@ -238,7 +238,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         self.probability_masks = None
         self.bev_drivable_area_image = None
         self.bev_drivable_area_label = None 
-        
+
         self.drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
         self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
         self.items[self.cntr].setSelected(True)
@@ -261,6 +261,9 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             self.items[self.cntr].setSelected(True)
             #self.qlist_images.setItemSelected(self.items[self.cntr], True)
             self.drivable_area_probability_mask_rgb_image = None
+            self.probability_masks = None
+            self.bev_drivable_area_image = None
+            self.bev_drivable_area_label = None 
         else:
             QtWidgets.QMessageBox.warning(self, 'Sorry', 'No more Images!')
 
@@ -273,6 +276,9 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             self.items[self.cntr].setSelected(True)
             #self.qlist_images.setItemSelected(self.items[self.cntr], True)
             self.drivable_area_probability_mask_rgb_image = None
+            self.probability_masks = None
+            self.bev_drivable_area_image = None
+            self.bev_drivable_area_label = None 
         else:
             QtWidgets.QMessageBox.warning(self, 'Sorry', 'No previous Image!')
 
@@ -392,7 +398,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         # Remove all list of attention points and non drivable area attention points on list_of_attention_points_column and list_of_attention_points_non_drivable_area_column
 
         self.list_of_attention_point_column.clear()
-        self.list_of_attention_point_non_drivable_area_column.clear()
+        self.list_of_attention_points_non_drivable_area_column.clear()
 
         self.update()
 
@@ -558,7 +564,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
         roi_of_drivable_area = [0, 30 ,-20,20,-2,2]
 
-        voxel_size= [1,1]
+        voxel_size= [0.5 , 0.5 ]#[1,1]
         
         name_of_camera_image_of_same_time_with_lidar_pcd = FOLDER_OF_CAMERA_IMAGE_KRADAR_DATASET + "/" + "cam-front_" + index_of_image_camera + ".png"
         
@@ -657,7 +663,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         
         #print( "Shape of BEV drivable area label with RGB image is : " + str( bev_drivable_area_label_with_rgb_image.shape))
         
-        bev_drivable_area_label_with_rgb_image[-2 : , int(width_of_bev_drivable_area_label/2) -1 : int( width_of_bev_drivable_area_label/2 )+ 1 ] = [ 0, 0, 255]
+        bev_drivable_area_label_with_rgb_image[int( -2/ voxel_size[1] ) : , int(width_of_bev_drivable_area_label/2) -int( 1/voxel_size[0] ) : int( width_of_bev_drivable_area_label/2 )+ int( 1 / voxel_size[0]) ] = [ 0, 0, 255]
 
         return bev_drivable_area_label_with_rgb_image , bev_drivable_area_label
     

@@ -33,11 +33,15 @@ Process of automatic labelling Drivable Area can be seen as below.
 
 1. Download the current repository to download all codes and resource. You can can download the current repository in Linux OS as below.
 
-``git clone https://github.com/christofel04/4D-Radar-Drivable-Area-Automatic-Labelling-using-Advanced-Deep-Learning.git``
+```
+git clone https://github.com/christofel04/4D-Radar-Drivable-Area-Automatic-Labelling-using-Advanced-Deep-Learning.git
+```
 
 2. Then go to directory of 4D Radar Automatic Labelling Tools and install all needed python packages using python package installation (pip) as below.
 
-``sudo pip install -r requirements.txt``
+```
+sudo pip install -r requirements.txt
+```
 
 3. Then install Image Segmentation using Deep Learning **Segment-Anything**. You can install the image segmentation using Deep Learning Segment-Anything based on the <a href="https://github.com/facebookresearch/segment-anything"> repository of Segment Anything </a>. Then download the pretrained model of Deep Learning Segment-Anything with large model (***VIT-L Model***).
 
