@@ -584,6 +584,8 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         camera_image_of_same_time_with_lidar_pcd = plt.imread( name_of_camera_image_of_same_time_with_lidar_pcd )[ : , :1280]
         
         drivable_area_label_of_image_same_time_with_lidar_pcd = self.probability_masks #plt.imread( FOLDER_OF_DRIVABLE_AREA_LABEL_KRADAR_DATASET +  "cam-front_" + index_of_camera_image_same_time_of_lidar_pcd + ".png" )#.transpose(1,0,2)
+
+        print( "Shape of Drivable Area Lable of Image Same Time with LiDAR PCD is : " + str( drivable_area_label_of_image_same_time_with_lidar_pcd.shape ))
         
         if drivable_area_label_of_image_same_time_with_lidar_pcd is None :
             # Then there is no drivable area label on image
@@ -653,7 +655,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         bev_drivable_area_label_with_rgb_image = np.ones(( height_of_bev_map , width_of_bev_map , 3 )) * 255 
 
         for drivable_area_lidar_point_coordinate, drivable_area_lidar_point_projected_to_image_coordinate in zip( drivable_area_lidar_point , lidar_point_drivable_area_in_image_coordinate ) :
-
+            
             bev_drivable_area_label[height_of_bev_map - int( drivable_area_lidar_point_coordinate[0]/ voxel_size[1]) , int( (-1*drivable_area_lidar_point_coordinate[1] - roi_of_drivable_area[2])/voxel_size[0])] = 1
 
             # Give drivable area label to RGB image with color based on Drivable Area image on the image location coordinate
@@ -803,6 +805,8 @@ class Iwindow(QtWidgets.QMainWindow, gui):
                 self.drivable_area_image_viewer.loadImageFromArray( image_to_be_predicted.astype( np.uint8 ) )
 
                 self.drivable_area_probability_mask_rgb_image = new_image_drivable_area_probability_mask_on_image.astype( np.uint8 )
+
+                self.probability_masks = np.array( [[ 0 if ( i == [255 , 255 , 255]).all() else 1 for i in j ] for j in self.drivable_area_probability_mask_rgb_image.copy() ] )
 
                 # Then delete start point of Deleting Drivable Area Label on Image Start Point
 
