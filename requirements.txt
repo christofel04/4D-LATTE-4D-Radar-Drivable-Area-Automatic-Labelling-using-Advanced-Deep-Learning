@@ -1,8 +1,8 @@
-PyQt5
+PyQt5==5.15.2
 opencv-python
 matplotlib
 mahotas
-yaml
+#yaml
 scipy
-torch
-torchvision
+#torch
+#torchvision

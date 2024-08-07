@@ -70,6 +70,8 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         self.is_delete_attention_point : bool = False  
 
         self.is_add_drivable_area_in_bev_drivable_area : bool = False 
+        self.delete_drivable_area_on_image_start_point = None 
+
         self.add_bev_drivable_area_start_point = None 
         self.delete_bev_drivable_area_start_point = None 
 
@@ -139,6 +141,9 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         self.delete_BEV_DA_Label_from_LiDAR.clicked.connect( self.delete_bev_drivable_area_label_button_clicked )
         self.image_viewer.qlabel_image.mousePressEvent= self.add_attention_point
         self.image_viewer.qlabel_image.mouseReleaseEvent= self.mouseReleaseEvent_for_add_attention_point
+
+        self.drivable_area_image_viewer.qlabel_image.mousePressEvent = self.delete_drivable_area_label_MousePressedButton
+        self.drivable_area_image_viewer.qlabel_image.mouseReleaseEvent = self.delete_drivable_area_label_MouseReleaseButton
 
         self.bev_drivable_area_image_viewer.qlabel_image.mousePressEvent = self.add_drivable_area_in_bev_drivable_area_MousePressedButton
         self.bev_drivable_area_image_viewer.qlabel_image.mouseReleaseEvent = self.add_drivable_area_in_bev_drivable_area_MouseReleasedButton
@@ -506,6 +511,14 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
             image_predicted_with_drivable_area_prediction[ probability_masks > 0.99 ] = [0,255,0]
 
+            for camera_image_projection_coordinate_y in range( probability_masks.shape[0] ) :
+
+                for camera_image_projection_coordinate_x in range( probability_masks.shape[1] ) :
+
+                    if probability_masks[ camera_image_projection_coordinate_y ][ camera_image_projection_coordinate_x ] > 0.99 :
+
+                        image_predicted_with_drivable_area_prediction[ camera_image_projection_coordinate_y , camera_image_projection_coordinate_x ] = [ int( 10 + ( 255 - 10 )*camera_image_projection_coordinate_y/ probability_masks.shape[0]) , int( 10 + ( 255 - 10 )* camera_image_projection_coordinate_x/ probability_masks.shape[1]) , 0 ]
+
             #image_predicted_with_drivable_area_prediction = np.transpose( image_predicted_with_drivable_area_prediction , axes = (1,0,2) )
 
             #print( "Shape of Drivable Area prediction is : " + str( image_predicted_with_drivable_area_prediction.shape ) + " with Drivable Area prediction is : " + str( image_predicted_with_drivable_area_prediction ))
@@ -606,6 +619,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         
         drivable_area_lidar_point_label = drivable_area_label_of_image_same_time_with_lidar_pcd
 
+
         for lidar_point_in_image_coordinate in lidar_points_in_camera_image.transpose().astype(int) :
 
             lidar_point_in_image_coordinate = lidar_point_in_image_coordinate / ( lidar_point_in_image_coordinate[2] + 1e-12)
@@ -617,23 +631,36 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                     mask_of_drivable_area_label.append( True )
 
+                    #drivable_area_lidar_point_in_image_coordinate
+
                     #print( "Drivable area LiDAR point is : " + str( lidar_point_in_image_coordinate ))
 
                     continue
 
             mask_of_drivable_area_label.append(False)
         
-        drivable_area_lidar_point = out_arr[ mask_of_drivable_area_label ].astype( int )[ : , :2]
-        
-        
+        drivable_area_lidar_point = out_arr[ mask_of_drivable_area_label ].astype( int )[ : , : 2]
+
+        lidar_point_drivable_area_in_image_coordinate = lidar_points_in_camera_image.transpose().astype(int)[ mask_of_drivable_area_label ]
+
+        lidar_point_drivable_area_in_image_coordinate = lidar_point_drivable_area_in_image_coordinate / ( lidar_point_drivable_area_in_image_coordinate[ : , 2 ].reshape( -1  , 1 ) + 1e-12 )
+            
         width_of_bev_map = int( (roi_of_drivable_area[3] - roi_of_drivable_area[2])/voxel_size[1])
         height_of_bev_map = int( (roi_of_drivable_area[1] - roi_of_drivable_area[0])/voxel_size[0])
 
         bev_drivable_area_label = np.zeros((height_of_bev_map, width_of_bev_map))
 
-        for drivable_area_lidar_point_coordinate in drivable_area_lidar_point :
+        bev_drivable_area_label_with_rgb_image = np.ones(( height_of_bev_map , width_of_bev_map , 3 )) * 255 
+
+        for drivable_area_lidar_point_coordinate, drivable_area_lidar_point_projected_to_image_coordinate in zip( drivable_area_lidar_point , lidar_point_drivable_area_in_image_coordinate ) :
 
             bev_drivable_area_label[height_of_bev_map - int( drivable_area_lidar_point_coordinate[0]/ voxel_size[1]) , int( (-1*drivable_area_lidar_point_coordinate[1] - roi_of_drivable_area[2])/voxel_size[0])] = 1
+
+            # Give drivable area label to RGB image with color based on Drivable Area image on the image location coordinate
+
+            bev_drivable_area_label_with_rgb_image[height_of_bev_map - int( drivable_area_lidar_point_coordinate[0]/ voxel_size[1]) , int( (-1*drivable_area_lidar_point_coordinate[1] - roi_of_drivable_area[2])/voxel_size[0]) ] = [ int( 10 + (255 -10) * drivable_area_lidar_point_projected_to_image_coordinate[1] / 720 ),
+                                                                                                                                                                                                                                      int( 10 + ( 255 - 10 ) * drivable_area_lidar_point_projected_to_image_coordinate[0] / 1280 ),
+                                                                                                                                                                                                                                      0]
 
         bev_drivable_area_label[-4 : , int( width_of_bev_map/2 - 2) : int( width_of_bev_map/2 + 2)] = 1
 
@@ -655,7 +682,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
         #bev_drivable_area_label = mahotas.close_holes(bev_drivable_area_label , structuring_holes_to_remove)
         
-        bev_drivable_area_label_with_rgb_image = np.array( [[[0,255,0] if i == True else [255,255,255] for i in j ] for j in bev_drivable_area_label] ).astype(np.uint8)
+        #bev_drivable_area_label_with_rgb_image = np.array( [[[0,255,0] if i == True else [255,255,255] for i in j ] for j in bev_drivable_area_label] ).astype(np.uint8)
         
         width_of_bev_drivable_area_label = bev_drivable_area_label_with_rgb_image.shape[1]
         
@@ -726,6 +753,75 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             msg.setWindowTitle("Finish fixed Drivable Area label in camera")
             msg.setText("Finish fixing drivable area label in Images")
             msg.exec()
+
+    def delete_drivable_area_label_MousePressedButton(self, QMouseEvent ) :
+
+        if self.drivable_area_image_viewer.qimage_scaled is not None :
+
+            # Then there is Drivable Area predicted on image
+
+            if QMouseEvent.button() == Qt.RightButton :
+
+                if self.delete_drivable_area_on_image_start_point is None :
+
+                    self.center = QMouseEvent.pos()
+                    x, y = QMouseEvent.pos().x(), QMouseEvent.pos().y()
+                    actual_x_on_image = int( x*self.drivable_area_image_viewer.qimage.width()/self.drivable_area_image_viewer.qimage_scaled.width())
+                    actual_y_on_image = int( y*self.drivable_area_image_viewer.qimage.height()/self.drivable_area_image_viewer.qimage_scaled.height())
+
+                    self.delete_drivable_area_on_image_start_point = [ actual_x_on_image , actual_y_on_image ]
+
+    def delete_drivable_area_label_MouseReleaseButton( self, QMouseEvent ) :
+
+        if QMouseEvent.button() == Qt.RightButton :
+
+            if self.delete_drivable_area_on_image_start_point is not None :
+
+                # Then delete drivable area predicted by Deep Learning on Drivable Area Image 
+
+                self.center = QMouseEvent.pos()
+                x, y = QMouseEvent.pos().x(), QMouseEvent.pos().y()
+                actual_x_on_image = int( x*self.drivable_area_image_viewer.qimage.width()/self.drivable_area_image_viewer.qimage_scaled.width())
+                actual_y_on_image = int( y*self.drivable_area_image_viewer.qimage.height()/self.drivable_area_image_viewer.qimage_scaled.height())
+
+                new_image_drivable_area_probability_mask_on_image = self.drivable_area_probability_mask_rgb_image.copy()
+
+                new_image_drivable_area_probability_mask_on_image = cv2.rectangle(new_image_drivable_area_probability_mask_on_image , self.delete_drivable_area_on_image_start_point, [actual_x_on_image , actual_y_on_image], (255 , 255 , 255), thickness = -1 )
+
+                image_to_be_predicted = cv2.imread( self.dir_of_selected_images )[ : , : 1280].astype( np.uint8 )
+
+                image_to_be_predicted = cv2.cvtColor(image_to_be_predicted, cv2.COLOR_BGR2RGB)
+
+                for camera_image_projection_coordinate_y in range( new_image_drivable_area_probability_mask_on_image.shape[0] ) :
+
+                    for camera_image_projection_coordinate_x in range( new_image_drivable_area_probability_mask_on_image.shape[1] ) :
+
+                        if new_image_drivable_area_probability_mask_on_image[ camera_image_projection_coordinate_y ][ camera_image_projection_coordinate_x ][0] == 0 :
+
+                            image_to_be_predicted[ camera_image_projection_coordinate_y , camera_image_projection_coordinate_x ] = [ int( 10 + ( 255 - 10 )*camera_image_projection_coordinate_y/ new_image_drivable_area_probability_mask_on_image.shape[0]) , int( 10 + ( 255 - 10 )* camera_image_projection_coordinate_x/ new_image_drivable_area_probability_mask_on_image.shape[1]) , 0 ]
+
+                self.drivable_area_image_viewer.loadImageFromArray( image_to_be_predicted.astype( np.uint8 ) )
+
+                self.drivable_area_probability_mask_rgb_image = new_image_drivable_area_probability_mask_on_image.astype( np.uint8 )
+
+                # Then delete start point of Deleting Drivable Area Label on Image Start Point
+
+                self.delete_drivable_area_on_image_start_point = None 
+
+                # Give notification finished predicting Drivable Area Label in Image
+                msg = QtWidgets.QMessageBox()
+                msg.setWindowTitle("Finish delete Drivable Area label in image")
+                msg.setText( "Finish deleteing non- Drivable Area Label in Image")
+                msg.exec()
+                    
+
+                
+
+
+
+
+
+
 
     def add_bev_drivable_area_label_button_clicked(self):
 
