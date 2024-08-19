@@ -265,7 +265,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             self.drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
             self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
 
-            if self.bev_drivable_area_image is not NOne :
+            if self.bev_drivable_area_image is not None :
 
                 self.previous_frame_drivable_area_image = self.bev_drivable_area_image
 
