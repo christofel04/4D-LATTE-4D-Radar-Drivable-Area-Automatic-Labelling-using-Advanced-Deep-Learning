@@ -471,6 +471,38 @@
            </widget>
           </item>
 
+          <item row="0" column="1">
+           <widget class="QLabel" name="bev_drivable_area_previous_image_q_label_image">
+           <!--
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            -->
+            <property name="styleSheet">
+             <string notr="true">background-color:white
+</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="lineWidth">
+             <number>1</number>
+            </property>
+            <property name="midLineWidth">
+             <number>0</number>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+
           <item row="1" column="1">
            <widget class="QLabel" name="bev_drivable_area_qlabel_image">
            <!--

@@ -63,6 +63,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         self.image_viewer = ImageViewer(self.qlabel_image)
         self.drivable_area_image_viewer = ImageViewer(self.drivable_area_qlabel_image , image_position=[0,300])
         self.bev_drivable_area_image_viewer = ImageViewer(self.bev_drivable_area_qlabel_image, image_position=[0,0])
+        self.bev_drivable_area_previous_image_q_label_image_viewer = ImageViewer( self.bev_drivable_area_previous_image_q_label_image)
         
         self.is_add_attention_point : bool = False
         self.list_of_attention_points = []
@@ -263,6 +264,10 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             self.image_viewer.loadImage(self.logs[self.cntr]['path'])
             self.drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
             self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
+            if self.bev_drivable_area_image is not None :
+                self.previous_frame_drivable_area_image = self.bev_drivable_area_image
+
+                self.bev_drivable_area_previous_image_q_label_image_viewer.loadImageFromArray(self.previous_frame_drivable_area_image)
             self.items[self.cntr].setSelected(True)
             #self.qlist_images.setItemSelected(self.items[self.cntr], True)
             self.drivable_area_probability_mask_rgb_image = None
@@ -278,6 +283,10 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             self.image_viewer.loadImage(self.logs[self.cntr]['path'])
             self.drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
             self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
+            if self.bev_drivable_area_image is not None :
+                self.previous_frame_drivable_area_image = self.bev_drivable_area_image
+
+                self.bev_drivable_area_previous_image_q_label_image_viewer.loadImageFromArray( self.previous_frame_drivable_area_image )
             self.items[self.cntr].setSelected(True)
             #self.qlist_images.setItemSelected(self.items[self.cntr], True)
             self.drivable_area_probability_mask_rgb_image = None
@@ -292,6 +301,12 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         self.image_viewer.loadImage(self.logs[self.cntr]['path'])
         self.drivable_area_image_viewer.loadImage( self.logs[self.cntr]['path'] )
         self.bev_drivable_area_image_viewer.loadImage( self.logs[self.cntr][ 'path' ])
+
+        if self.bev_drivable_area_image is not None :
+            self.previous_frame_drivable_area_image = self.bev_drivable_area_image
+
+            self.bev_drivable_area_previous_image_q_label_image_viewer.loadImageFromArray( self.previous_frame_drivable_area_image )
+            
         self.drivable_area_probability_mask_rgb_image = None 
 
     def action_line(self):
