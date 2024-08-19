@@ -264,7 +264,9 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             self.image_viewer.loadImage(self.logs[self.cntr]['path'])
             self.drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
             self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
-            if self.bev_drivable_area_image is not None :
+
+            if self.bev_drivable_area_image is not NOne :
+
                 self.previous_frame_drivable_area_image = self.bev_drivable_area_image
 
                 self.bev_drivable_area_previous_image_q_label_image_viewer.loadImageFromArray(self.previous_frame_drivable_area_image)
@@ -306,7 +308,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             self.previous_frame_drivable_area_image = self.bev_drivable_area_image
 
             self.bev_drivable_area_previous_image_q_label_image_viewer.loadImageFromArray( self.previous_frame_drivable_area_image )
-            
+
         self.drivable_area_probability_mask_rgb_image = None 
 
     def action_line(self):
