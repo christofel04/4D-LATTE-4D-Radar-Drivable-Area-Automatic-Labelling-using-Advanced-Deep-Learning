@@ -16,6 +16,7 @@ from segment_anything import SamPredictor, sam_model_registry
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
 
 import sys, os
 
@@ -263,13 +264,32 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             self.cntr += 1
             self.image_viewer.loadImage(self.logs[self.cntr]['path'])
             self.drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
-            self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
+            #self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
+
+            path_of_current_image = self.logs[self.cntr]['path']
+
+            index_of_current_image_labelling = path_of_current_image.split("/")[-1][-9 : -4 ]
+
+            if self.find_lidar_index_same_time_of_camera_image_front_cam( index_of_current_image_labelling ) is not None :
+
+                self.lidar_index_for_this_camera_image = self.find_lidar_index_same_time_of_camera_image_front_cam( index_of_current_image_labelling )
+
+                self.bev_lidar_points_visualization_in_rgb_image = self.visualize_lidar_points_visualization( self.lidar_index_for_this_camera_image )
+
+                self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_lidar_points_visualization_in_rgb_image )
+
+            else :
+
+                self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
 
             if self.bev_drivable_area_image is not None :
 
                 self.previous_frame_drivable_area_image = self.bev_drivable_area_image
 
                 self.bev_drivable_area_previous_image_q_label_image_viewer.loadImageFromArray(self.previous_frame_drivable_area_image)
+
+                
+
             self.items[self.cntr].setSelected(True)
             #self.qlist_images.setItemSelected(self.items[self.cntr], True)
             self.drivable_area_probability_mask_rgb_image = None
@@ -284,11 +304,29 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             self.cntr -= 1
             self.image_viewer.loadImage(self.logs[self.cntr]['path'])
             self.drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
-            self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
+            #self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
+
+            path_of_current_image = self.logs[self.cntr]['path']
+
+            index_of_current_image_labelling = path_of_current_image.split("/")[-1][-9 : -4 ]
+
+            if self.find_lidar_index_same_time_of_camera_image_front_cam( index_of_current_image_labelling ) is not None :
+
+                self.lidar_index_for_this_camera_image = self.find_lidar_index_same_time_of_camera_image_front_cam( index_of_current_image_labelling )
+
+                self.bev_lidar_points_visualization_in_rgb_image = self.visualize_lidar_points_visualization( self.lidar_index_for_this_camera_image )
+
+                self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_lidar_points_visualization_in_rgb_image )
+
+            else :
+
+                self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
+
             if self.bev_drivable_area_image is not None :
                 self.previous_frame_drivable_area_image = self.bev_drivable_area_image
 
                 self.bev_drivable_area_previous_image_q_label_image_viewer.loadImageFromArray( self.previous_frame_drivable_area_image )
+                
             self.items[self.cntr].setSelected(True)
             #self.qlist_images.setItemSelected(self.items[self.cntr], True)
             self.drivable_area_probability_mask_rgb_image = None
@@ -302,7 +340,23 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         self.cntr = self.items.index(item)
         self.image_viewer.loadImage(self.logs[self.cntr]['path'])
         self.drivable_area_image_viewer.loadImage( self.logs[self.cntr]['path'] )
-        self.bev_drivable_area_image_viewer.loadImage( self.logs[self.cntr][ 'path' ])
+        #self.bev_drivable_area_image_viewer.loadImage( self.logs[self.cntr][ 'path' ])
+
+        path_of_current_image = self.logs[self.cntr]['path']
+
+        index_of_current_image_labelling = path_of_current_image.split("/")[-1][-9 : -4 ]
+
+        if self.find_lidar_index_same_time_of_camera_image_front_cam( index_of_current_image_labelling ) is not None :
+
+            self.lidar_index_for_this_camera_image = self.find_lidar_index_same_time_of_camera_image_front_cam( index_of_current_image_labelling )
+
+            self.bev_lidar_points_visualization_in_rgb_image = self.visualize_lidar_points_visualization( self.lidar_index_for_this_camera_image )
+
+            self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_lidar_points_visualization_in_rgb_image )
+
+        else :
+
+            self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
 
         if self.bev_drivable_area_image is not None :
             self.previous_frame_drivable_area_image = self.bev_drivable_area_image
@@ -576,6 +630,53 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             
         return None
     
+    def visualize_lidar_points_visualization( self, index_of_lidar_points_for_this_camera ) :
+
+        FOLDER_OF_LIDAR_PCD_KRADAR_DATASET = "/".join( self.folder.split("/")[: -2] ) + "/" + str( self.folder.split("/")[-2])[ : -3] + "lpc" + "/os1-128/"
+
+        roi_of_drivable_area = [0, 30 ,-20,20,-2,2]
+
+        voxel_size= [0.1 , 0.1 ]#[1,1]
+  
+        pcd = o3d.io.read_point_cloud(FOLDER_OF_LIDAR_PCD_KRADAR_DATASET + "os1-128_" + str( index_of_lidar_points_for_this_camera ) + ".pcd" )
+        
+        out_arr = np.asarray(pcd.points)  
+    
+        out_arr = out_arr[ ( out_arr[ : , 0 ] >= roi_of_drivable_area[0] ) & ( out_arr[ : , 0 ] <= roi_of_drivable_area[1]) & (out_arr[ : , 1 ] >= roi_of_drivable_area[2] ) & (out_arr[ : , 1] <= roi_of_drivable_area[3]) & ( out_arr[ : , 2 ] >= roi_of_drivable_area[4] ) & (out_arr[ : , 2 ] <= roi_of_drivable_area[5]) ]
+
+
+        width_of_bev_map = int( (roi_of_drivable_area[3] - roi_of_drivable_area[2])/voxel_size[1])
+        height_of_bev_map = int( (roi_of_drivable_area[1] - roi_of_drivable_area[0])/voxel_size[0])
+
+        bev_drivable_area_label = np.ones((height_of_bev_map, width_of_bev_map)) * -100
+
+        for lidar_points_around_autonomous_vehicle in out_arr :
+
+            # Find maximum LiDAR point measurement heights in every DA grids
+
+            try : 
+
+                if bev_drivable_area_label[height_of_bev_map - int( lidar_points_around_autonomous_vehicle[0]/ voxel_size[1]) , int( (-1*lidar_points_around_autonomous_vehicle[1] - roi_of_drivable_area[2])/voxel_size[0]) ] < lidar_points_around_autonomous_vehicle[ 2 ] :
+
+                    bev_drivable_area_label[height_of_bev_map - int( lidar_points_around_autonomous_vehicle[0]/ voxel_size[1]) , int( (-1*lidar_points_around_autonomous_vehicle[1] - roi_of_drivable_area[2])/voxel_size[0]) ] = lidar_points_around_autonomous_vehicle[2] # max( lidar_points_around_autonomous_vehicle[2] , )
+
+            except :
+
+                continue 
+
+        # Convert LiDAR point BEV drivable area into LiDAR point BEV drivable area RGB image
+
+        bev_drivable_area_label_rgb_images = np.array( [[[255 , 255 , 255] if i== -100 else [0 , 0 , int( 100 + (-1* i+2)/4 * ( 255 - 100 ))]  for i in j ] for j in bev_drivable_area_label] ).astype( np.uint8 )
+
+        #print( "BEV lidar visualization in RGB images are : " + str( bev_drivable_area_label_rgb_images))
+
+
+        return bev_drivable_area_label_rgb_images
+
+
+
+
+    
     def visualize_bev_drivable_area_label_using_lidar( self, index_of_image_camera : str , is_return_drivable_area_in_image_and_bev = False ):
     
         index_of_lidar_point_cloud_same_time_of_camera_image = self.find_lidar_index_same_time_of_camera_image_front_cam( index_of_image_camera )
@@ -709,9 +810,27 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         
         #print( "Shape of BEV drivable area label with RGB image is : " + str( bev_drivable_area_label_with_rgb_image.shape))
         
-        bev_drivable_area_label_with_rgb_image[int( -2/ voxel_size[1] ) : , int(width_of_bev_drivable_area_label/2) -int( 1/voxel_size[0] ) : int( width_of_bev_drivable_area_label/2 )+ int( 1 / voxel_size[0]) ] = [ 0, 0, 255]
+        bev_drivable_area_label_with_rgb_image[int( -2/ voxel_size[1] ) : , int(width_of_bev_drivable_area_label/2) -int( 1/voxel_size[0] ) : int( width_of_bev_drivable_area_label/2 )+ int( 1 / voxel_size[0]) ] = [ 255, 0, 0]
 
-        return bev_drivable_area_label_with_rgb_image , bev_drivable_area_label
+
+        #bev_drivable_area_label_with_rgb_image = Image.blend( Image.fromarray(self.bev_lidar_points_visualization_in_rgb_image.astype( np.uint8 )) , Image.fromarray(bev_drivable_area_label_with_rgb_image.astype( np.uint8) ), 0.5 )
+
+        # Combine LiDAR points visualization and drivable area visualization
+
+        """
+
+        for x_coordinate_of_bev_drivable_area in range( bev_drivable_area_label_with_rgb_image.shape[0]) :
+
+            for y_coordinate_of_bev_drivable_area in range( bev_drivable_area_label_with_rgb_image.shape[1]) :
+
+                if bev_drivable_area_label_with_rgb_image[x_coordinate_of_bev_drivable_area][y_coordinate_of_bev_drivable_area][2] == 255 :
+
+                    bev_drivable_area_label_with_rgb_image[x_coordinate_of_bev_drivable_area][y_coordinate_of_bev_drivable_area] = self.bev_lidar_points_visualization_in_rgb_image[x_coordinate_of_bev_drivable_area][y_coordinate_of_bev_drivable_area]
+
+        """
+
+
+        return np.array( bev_drivable_area_label_with_rgb_image ), bev_drivable_area_label
     
     def generates_bev_DA_label_projected_to_lidar_pcd(self) :
 
@@ -723,11 +842,49 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
         if image_of_DA_label_projection is not None :
 
+            print( "Shape of DA Label projection is : " + str( image_of_DA_label_projection.shape ) + " with Data Types : " + str( image_of_DA_label_projection))
+
             self.bev_drivable_area_image_viewer.loadImageFromArray( image_of_DA_label_projection.astype( np.uint8 ) )
 
             self.bev_drivable_area_image = image_of_DA_label_projection
 
+            self.bev_drivable_area_image_in_rgb_image = image_of_DA_label_projection
+
+            if ( self.bev_drivable_area_image.shape != self.bev_lidar_points_visualization_in_rgb_image.shape ) :
+
+                self.bev_drivable_area_image = cv2.resize(self.bev_drivable_area_image, dsize=( self.bev_lidar_points_visualization_in_rgb_image.shape[ 1] , self.bev_lidar_points_visualization_in_rgb_image.shape[0]), interpolation=cv2.INTER_NEAREST)
+
+                #self.bev_drivable_area_image = np.array( self.bev_drivable_area_image ).transpose( (1,0,2) )
+
+                assert self.bev_drivable_area_image.shape == self.bev_lidar_points_visualization_in_rgb_image.shape , "Dimension of BEV drivable area image is : {} While dimension of BEV LiDAR points visualization is : {}".format( self.bev_drivable_area_image.shape , self.bev_lidar_points_visualization_in_rgb_image.shape )
+
+            # Then combine BEV LiDAR Points visualization and BEV DA Label Visualizations
+
+            for x_coordinate_of_bev_drivable_area in range( self.bev_drivable_area_image.shape[0]) :
+
+                for y_coordinate_of_bev_drivable_area in range( self.bev_drivable_area_image.shape[1]) :
+
+                    if self.bev_drivable_area_image[x_coordinate_of_bev_drivable_area][y_coordinate_of_bev_drivable_area][2] == 255 :
+
+                        self.bev_drivable_area_image[x_coordinate_of_bev_drivable_area][y_coordinate_of_bev_drivable_area] = self.bev_lidar_points_visualization_in_rgb_image[x_coordinate_of_bev_drivable_area][y_coordinate_of_bev_drivable_area]
+
+            
+
             self.bev_drivable_area_label = bev_drivable_area_label
+
+            bev_drivable_area_image_with_LiDAR_visualization = self.bev_drivable_area_image.astype( np.uint8 )
+
+            #plt.plot( bev_drivable_area_image_with_LiDAR_visualization)
+
+            #plt.show()
+
+            #plt.savefig( bev_drivable_area_image_with_LiDAR_visualization , "BEV_Drivable_Area_Image_with_LiDAR_Visualization.png" )
+
+            cv2.imwrite('bev_drivable_area_image_with_LiDAR_visualization.png', bev_drivable_area_image_with_LiDAR_visualization)
+
+            print( "Shape of BEV Drivable Area Image with LiDAR Visualization is : " + str( bev_drivable_area_image_with_LiDAR_visualization.shape ) + " with Data Types : " + str( bev_drivable_area_image_with_LiDAR_visualization ))
+
+            self.bev_drivable_area_image_viewer.loadImageFromArray( bev_drivable_area_image_with_LiDAR_visualization )
 
             # Give notification finished predicting Drivable Area Label in Image
             msg = QtWidgets.QMessageBox()
@@ -868,8 +1025,13 @@ class Iwindow(QtWidgets.QMainWindow, gui):
                     x, y = QMouseEvent.pos().x(), QMouseEvent.pos().y()
                     actual_x_on_image = int( x*self.bev_drivable_area_image_viewer.qimage.width()/self.bev_drivable_area_image_viewer.qimage_scaled.width())
                     actual_y_on_image = int( y*self.bev_drivable_area_image_viewer.qimage.height()/self.bev_drivable_area_image_viewer.qimage_scaled.height())
+                    
+                    actual_x_on_bev_label_rgb_image = int( x*self.bev_drivable_area_image_in_rgb_image.shape[1]/self.bev_drivable_area_image_viewer.qimage_scaled.width())
+                    actual_y_on_bev_label_rgb_image = int( y*self.bev_drivable_area_image_in_rgb_image.shape[0]/ self.bev_drivable_area_image_viewer.qimage_scaled.height())
 
                     self.add_bev_drivable_area_start_point = [ actual_x_on_image , actual_y_on_image ]
+
+                    self.add_bev_drivable_area_start_point_in_bev_label = [ actual_x_on_bev_label_rgb_image , actual_y_on_bev_label_rgb_image]
 
         elif self.is_delete_drivable_area_in_bev_drivable_area == True :
 
@@ -896,6 +1058,9 @@ class Iwindow(QtWidgets.QMainWindow, gui):
                 actual_x_on_image = int( x*self.bev_drivable_area_image_viewer.qimage.width()/self.bev_drivable_area_image_viewer.qimage_scaled.width())
                 actual_y_on_image = int( y*self.bev_drivable_area_image_viewer.qimage.height()/self.bev_drivable_area_image_viewer.qimage_scaled.height())
 
+                actual_x_on_bev_label_rgb_image = int( x*self.bev_drivable_area_image_in_rgb_image.shape[1]/self.bev_drivable_area_image_viewer.qimage_scaled.width())
+                actual_y_on_bev_label_rgb_image = int( y*self.bev_drivable_area_image_in_rgb_image.shape[0]/ self.bev_drivable_area_image_viewer.qimage_scaled.height())
+
                 # Then draw additional drivable area point
 
                 # Blue color in BGR 
@@ -913,9 +1078,13 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                 new_image_drivable_area_probability_mask_rgb_image = cv2.rectangle(new_image_drivable_area_probability_mask_rgb_image , self.add_bev_drivable_area_start_point, [actual_x_on_image , actual_y_on_image], color, thickness) 
 
+                new_image_drivable_area_probability_mask_rgb_image_DA_label = cv2.rectangle(self.bev_drivable_area_image_in_rgb_image , self.add_bev_drivable_area_start_point_in_bev_label, [actual_x_on_bev_label_rgb_image, actual_y_on_bev_label_rgb_image], color, thickness) 
+
                 self.bev_drivable_area_image = new_image_drivable_area_probability_mask_rgb_image
 
-                self.bev_drivable_area_label = np.array( [ [False if ( i == [255,255,255]).all() else True for i in j ] for j in self.bev_drivable_area_image ] )
+                self.bev_drivable_area_image_in_rgb_image = new_image_drivable_area_probability_mask_rgb_image_DA_label
+
+                self.bev_drivable_area_label = np.array( [ [False if (( (i[0] == 0 ) & ( i[1] ==0 )) | ( i == [255,255,255]).all() ) else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
 
                 self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_drivable_area_image )
                 
@@ -938,6 +1107,10 @@ class Iwindow(QtWidgets.QMainWindow, gui):
                 actual_x_on_image = int( x*self.bev_drivable_area_image_viewer.qimage.width()/self.bev_drivable_area_image_viewer.qimage_scaled.width())
                 actual_y_on_image = int( y*self.bev_drivable_area_image_viewer.qimage.height()/self.bev_drivable_area_image_viewer.qimage_scaled.height())
 
+                
+                actual_x_on_bev_label_rgb_image = int( x*self.bev_drivable_area_image_in_rgb_image.shape[1]/self.bev_drivable_area_image_viewer.qimage_scaled.width())
+                actual_y_on_bev_label_rgb_image = int( y*self.bev_drivable_area_image_in_rgb_image.shape[0]/ self.bev_drivable_area_image_viewer.qimage_scaled.height())
+
                 # Then draw additional drivable area point
 
                 # Blue color in BGR 
@@ -953,11 +1126,15 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                 #print( "Adding bev drivable area label in image from coordinate : {} to coordinate : {}".format( self.add_bev_drivable_area_start_point , [ actual_x_on_image , actual_y_on_image ]))
 
-                new_image_drivable_area_probability_mask_rgb_image = cv2.rectangle(new_image_drivable_area_probability_mask_rgb_image , self.delete_bev_drivable_area_start_point, [actual_x_on_image , actual_y_on_image], color, thickness) 
+                new_image_drivable_area_probability_mask_rgb_image = cv2.rectangle(new_image_drivable_area_probability_mask_rgb_image , self.delete_bev_drivable_area_start_point, [actual_x_on_image , actual_y_on_image], color, thickness)
+
+                new_image_drivable_area_probability_mask_rgb_image_DA_label = cv2.rectangle(self.bev_drivable_area_image_in_rgb_image , self.add_bev_drivable_area_start_point_in_bev_label, [actual_x_on_bev_label_rgb_image, actual_y_on_bev_label_rgb_image], color, thickness)  
 
                 self.bev_drivable_area_image = new_image_drivable_area_probability_mask_rgb_image
 
-                self.bev_drivable_area_label = np.array( [ [False if ( i == [255,255,255]).all() else True for i in j ] for j in self.bev_drivable_area_image ] )
+                self.bev_drivable_area_image_in_rgb_image = new_image_drivable_area_probability_mask_rgb_image_DA_label
+
+                self.bev_drivable_area_label = np.array( [ [False if ( ((i[0] == 0) & ( i[1] == 0)) | ( i == [ 255, 255 , 255])).all() else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
 
                 self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_drivable_area_image )
                 
@@ -987,6 +1164,8 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
         
     def save_drivable_area_label(self) :
+
+        #self.drivable_area_probability_mask_rgb_image = self.bev_drivable_area_image_in_rgb_image
 
         if self.drivable_area_probability_mask_rgb_image is not None :
 
