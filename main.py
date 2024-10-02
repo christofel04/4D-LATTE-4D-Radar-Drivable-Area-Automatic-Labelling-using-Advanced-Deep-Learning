@@ -703,7 +703,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         
         drivable_area_label_of_image_same_time_with_lidar_pcd = self.probability_masks #plt.imread( FOLDER_OF_DRIVABLE_AREA_LABEL_KRADAR_DATASET +  "cam-front_" + index_of_camera_image_same_time_of_lidar_pcd + ".png" )#.transpose(1,0,2)
 
-        print( "Shape of Drivable Area Lable of Image Same Time with LiDAR PCD is : " + str( drivable_area_label_of_image_same_time_with_lidar_pcd.shape ))
+        #print( "Shape of Drivable Area Lable of Image Same Time with LiDAR PCD is : " + str( drivable_area_label_of_image_same_time_with_lidar_pcd.shape ))
         
         if drivable_area_label_of_image_same_time_with_lidar_pcd is None :
             # Then there is no drivable area label on image
@@ -882,7 +882,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
             cv2.imwrite('bev_drivable_area_image_with_LiDAR_visualization.png', bev_drivable_area_image_with_LiDAR_visualization)
 
-            print( "Shape of BEV Drivable Area Image with LiDAR Visualization is : " + str( bev_drivable_area_image_with_LiDAR_visualization.shape ) + " with Data Types : " + str( bev_drivable_area_image_with_LiDAR_visualization ))
+            #print( "Shape of BEV Drivable Area Image with LiDAR Visualization is : " + str( bev_drivable_area_image_with_LiDAR_visualization.shape ) + " with Data Types : " + str( bev_drivable_area_image_with_LiDAR_visualization ))
 
             self.bev_drivable_area_image_viewer.loadImageFromArray( bev_drivable_area_image_with_LiDAR_visualization )
 
