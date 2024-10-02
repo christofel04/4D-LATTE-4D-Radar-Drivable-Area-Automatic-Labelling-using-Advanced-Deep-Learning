@@ -1,4 +1,4 @@
-# 4D- LATTE : 4D Radar Drivable Area Automatic Labelling Tools using Deep Learning
+# 4D- LATTE : 4D Radar Drivable Area Automatic Labelling Tools by LiDAR and Cameras using Deep Learning
 
 ![image](./resources/imgs/picture_of_Interface_4D_radar_automatic_labelling_using_deep_learning.png)
 
