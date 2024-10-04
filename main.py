@@ -842,7 +842,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
         if image_of_DA_label_projection is not None :
 
-            print( "Shape of DA Label projection is : " + str( image_of_DA_label_projection.shape ) + " with Data Types : " + str( image_of_DA_label_projection))
+            #print( "Shape of DA Label projection is : " + str( image_of_DA_label_projection.shape ) + " with Data Types : " + str( image_of_DA_label_projection))
 
             self.bev_drivable_area_image_viewer.loadImageFromArray( image_of_DA_label_projection.astype( np.uint8 ) )
 
@@ -1133,7 +1133,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                 new_image_drivable_area_probability_mask_rgb_image = cv2.rectangle(new_image_drivable_area_probability_mask_rgb_image , self.delete_bev_drivable_area_start_point, [actual_x_on_image , actual_y_on_image], color, thickness)
 
-                new_image_drivable_area_probability_mask_rgb_image_DA_label = cv2.rectangle(self.bev_drivable_area_image_in_rgb_image , self.add_bev_drivable_area_start_point_in_bev_label, [actual_x_on_bev_label_rgb_image, actual_y_on_bev_label_rgb_image], color, thickness)  
+                new_image_drivable_area_probability_mask_rgb_image_DA_label = cv2.rectangle(self.bev_drivable_area_image_in_rgb_image , self.delete_bev_drivable_area_start_point_in_bev_label, [actual_x_on_bev_label_rgb_image, actual_y_on_bev_label_rgb_image], color, thickness)  
 
                 self.bev_drivable_area_image = new_image_drivable_area_probability_mask_rgb_image
 
