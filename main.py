@@ -842,7 +842,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
         if image_of_DA_label_projection is not None :
 
-            #print( "Shape of DA Label projection is : " + str( image_of_DA_label_projection.shape ) + " with Data Types : " + str( image_of_DA_label_projection))
+            print( "Shape of DA Label projection is : " + str( image_of_DA_label_projection.shape ) + " with Data Types : " + str( image_of_DA_label_projection))
 
             self.bev_drivable_area_image_viewer.loadImageFromArray( image_of_DA_label_projection.astype( np.uint8 ) )
 
