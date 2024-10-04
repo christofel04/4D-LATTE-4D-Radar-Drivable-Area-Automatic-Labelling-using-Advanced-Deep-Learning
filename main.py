@@ -1043,7 +1043,12 @@ class Iwindow(QtWidgets.QMainWindow, gui):
                     actual_x_on_image = int( x*self.bev_drivable_area_image_viewer.qimage.width()/self.bev_drivable_area_image_viewer.qimage_scaled.width())
                     actual_y_on_image = int( y*self.bev_drivable_area_image_viewer.qimage.height()/self.bev_drivable_area_image_viewer.qimage_scaled.height())
 
+                    actual_x_on_bev_label_rgb_image = int( x*self.bev_drivable_area_image_in_rgb_image.shape[1]/self.bev_drivable_area_image_viewer.qimage_scaled.width())
+                    actual_y_on_bev_label_rgb_image = int( y*self.bev_drivable_area_image_in_rgb_image.shape[0]/ self.bev_drivable_area_image_viewer.qimage_scaled.height())
+
                     self.delete_bev_drivable_area_start_point = [ actual_x_on_image , actual_y_on_image ]
+
+                    self.delete_bev_drivable_area_start_point_in_bev_label = [ actual_x_on_bev_label_rgb_image , actual_x_on_bev_label_rgb_image ]
 
     def add_drivable_area_in_bev_drivable_area_MouseReleasedButton(self, QMouseEvent ) :
 
