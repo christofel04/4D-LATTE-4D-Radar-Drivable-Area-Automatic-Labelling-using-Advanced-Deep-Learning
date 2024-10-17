@@ -854,7 +854,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
         if image_of_DA_label_projection is not None :
 
-            print( "Shape of DA Label projection is : " + str( image_of_DA_label_projection.shape ) + " with Data Types : " + str( image_of_DA_label_projection))
+            #print( "Shape of DA Label projection is : " + str( image_of_DA_label_projection.shape ) + " with Data Types : " + str( image_of_DA_label_projection))
 
             self.bev_drivable_area_image_viewer.loadImageFromArray( image_of_DA_label_projection.astype( np.uint8 ) )
 
@@ -904,7 +904,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             msg.setText("Finish predicting BEV Drivable Area Label using LiDAR pcd")
             msg.exec()
 
-            self.save_drivable_area_label()
+            #   self.save_drivable_area_label()
         
         return 
 
@@ -1103,7 +1103,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                 #self.bev_drivable_area_label = np.array( [ [False if (( (i[0] == 0 ) & ( i[1] ==0 )) | ( i == [255,255,255]).all() ) else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
 
-                self.bev_drivable_area_label = np.array( [ [False if (( (i[0] == 0 ) & ( i[1] ==0 )) | ( (i[0] > 0) & (i[1] < 255 ) ) | ( i == [255,255,255]).all() ) else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
+                self.bev_drivable_area_label = np.array( [ [False if (( (i[0] == 0 ) & ( i[1] ==0 )) | ( (i[0] > 0)  ) | ( i == [255,255,255]).all() ) else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
 
                 self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_drivable_area_image )
                 
@@ -1153,7 +1153,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                 self.bev_drivable_area_image_in_rgb_image = new_image_drivable_area_probability_mask_rgb_image_DA_label
 
-                self.bev_drivable_area_label = np.array( [ [False if ( ((i[0] == 0) & ( i[1] == 0)) | (( i[0] > 0 ) & ( i[1] < 255 )) |( i == [ 255, 255 , 255]).all()) else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
+                self.bev_drivable_area_label = np.array( [ [False if ( ((i[0] == 0) & ( i[1] == 0)) | (( i[0] > 0 )) |( i == [ 255, 255 , 255]).all()) else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
 
                 self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_drivable_area_image )
                 
@@ -1186,6 +1186,10 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             QtWidgets.QMessageBox.warning(self, 'Cannot Load Drivable Area Label from Previous LiDAR Frame', 'Please make sure Labelling BEV Drivable Area in previous LiDAR frame first' )
 
         else :
+
+            if self.bev_drivable_area_image is None :
+
+                QtWidgets.QMessageBox.warning(self, 'Cannot Copy Drivable Area Label from Previous LiDAR Frame', 'Please make sure Project Drivable Area Labelling on BEV Label before copy Drivable Area Label from Previous Frame' )
 
             self.bev_drivable_area_label = self.previous_frame_drivable_area_image_bev_label
 
