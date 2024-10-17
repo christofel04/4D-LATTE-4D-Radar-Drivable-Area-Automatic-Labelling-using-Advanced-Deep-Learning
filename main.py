@@ -1209,6 +1209,8 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
 
             self.bev_drivable_area_image = bev_drivable_area_label_in_lidar_point_visualization_size.astype( np.uint8 )
+            
+            self.bev_drivable_area_image_in_rgb_image = bev_drivable_area_label_in_lidar_point_visualization_size.astype( np.uint8 )
 
             self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_drivable_area_image )
 
@@ -1265,6 +1267,8 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
 
             self.bev_drivable_area_image = bev_drivable_area_label_in_lidar_point_visualization_size.astype( np.uint8 )
+
+            self.bev_drivable_area_image_in_rgb_image = bev_drivable_area_label_in_lidar_point_visualization_size.astype( np.uint8 )
 
             self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_drivable_area_image )
 
