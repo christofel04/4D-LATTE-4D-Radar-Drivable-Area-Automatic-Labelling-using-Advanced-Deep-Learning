@@ -31,6 +31,8 @@ import yaml
 
 from scipy.spatial.transform import Rotation as R
 
+#os.environ[ "QT_QPA_PLATFORM" ] = "offscreen"
+
 os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = QLibraryInfo.location(
     QLibraryInfo.PluginsPath
 )
@@ -158,6 +160,10 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         #self.fix_holes_DA_label_button.clicked.connect( self.fix_holes_drivable_area_label )
         self.generates_BEV_DA_Label_from_LiDAR.clicked.connect( self.generates_bev_DA_label_projected_to_lidar_pcd )
         self.save_Drivable_Area_label.clicked.connect( self.save_drivable_area_label )
+
+        self.copy_BEV_DA_Label_from_Previous_Frame.clicked.connect( self.copy_bev_drivable_area_label_from_previous_lidar_frame_label )
+        self.load_BEV_Drivable_Area_Label.clicked.connect( self.load_bev_drivable_area_label_from_folder )
+
         self.clear_all_attention_points_button.clicked.connect(self.delete_all_attention_points )
         self.zoom_plus.clicked.connect(self.image_viewer.zoomPlus)
         self.zoom_minus.clicked.connect(self.image_viewer.zoomMinus)
@@ -286,6 +292,8 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                 self.previous_frame_drivable_area_image = self.bev_drivable_area_image
 
+                self.previous_frame_drivable_area_image_bev_label = self.bev_drivable_area_label
+
                 self.bev_drivable_area_previous_image_q_label_image_viewer.loadImageFromArray(self.previous_frame_drivable_area_image)
 
                 
@@ -325,6 +333,8 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             if self.bev_drivable_area_image is not None :
                 self.previous_frame_drivable_area_image = self.bev_drivable_area_image
 
+                self.previous_frame_drivable_area_image_bev_label = self.bev_drivable_area_label
+
                 self.bev_drivable_area_previous_image_q_label_image_viewer.loadImageFromArray( self.previous_frame_drivable_area_image )
                 
             self.items[self.cntr].setSelected(True)
@@ -360,6 +370,8 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
         if self.bev_drivable_area_image is not None :
             self.previous_frame_drivable_area_image = self.bev_drivable_area_image
+
+            self.previous_frame_drivable_area_image_bev_label = self.bev_drivable_area_label
 
             self.bev_drivable_area_previous_image_q_label_image_viewer.loadImageFromArray( self.previous_frame_drivable_area_image )
 
@@ -1089,7 +1101,9 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                 self.bev_drivable_area_image_in_rgb_image = new_image_drivable_area_probability_mask_rgb_image_DA_label
 
-                self.bev_drivable_area_label = np.array( [ [False if (( (i[0] == 0 ) & ( i[1] ==0 )) | ( i == [255,255,255]).all() ) else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
+                #self.bev_drivable_area_label = np.array( [ [False if (( (i[0] == 0 ) & ( i[1] ==0 )) | ( i == [255,255,255]).all() ) else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
+
+                self.bev_drivable_area_label = np.array( [ [False if (( (i[0] == 0 ) & ( i[1] ==0 )) | ( (i[0] > 0) & (i[1] < 255 ) ) | ( i == [255,255,255]).all() ) else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
 
                 self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_drivable_area_image )
                 
@@ -1139,7 +1153,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                 self.bev_drivable_area_image_in_rgb_image = new_image_drivable_area_probability_mask_rgb_image_DA_label
 
-                self.bev_drivable_area_label = np.array( [ [False if ( ((i[0] == 0) & ( i[1] == 0)) | ( i == [ 255, 255 , 255])).all() else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
+                self.bev_drivable_area_label = np.array( [ [False if ( ((i[0] == 0) & ( i[1] == 0)) | (( i[0] > 0 ) & ( i[1] < 255 )) |( i == [ 255, 255 , 255]).all()) else True for i in j ] for j in self.bev_drivable_area_image_in_rgb_image ] )
 
                 self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_drivable_area_image )
                 
@@ -1165,7 +1179,104 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             self.is_add_drivable_area_in_bev_drivable_area = False 
                      
 
-                 
+    def copy_bev_drivable_area_label_from_previous_lidar_frame_label( self ) :
+
+        if self.previous_frame_drivable_area_image_bev_label is None :
+
+            QtWidgets.QMessageBox.warning(self, 'Cannot Load Drivable Area Label from Previous LiDAR Frame', 'Please make sure Labelling BEV Drivable Area in previous LiDAR frame first' )
+
+        else :
+
+            self.bev_drivable_area_label = self.previous_frame_drivable_area_image_bev_label
+
+            bev_drivable_area_label_in_rgb_image = np.array( [[[ 0 , 255 , 0] if i == True else [ 255 , 255 , 255] for i in j  ] for j in self.bev_drivable_area_label ] ).astype( np.uint8)
+
+            # Visualize previous BEV DA Label to current LiDAR frame visualization
+
+            bev_drivable_area_label_in_lidar_point_visualization_size = cv2.resize( bev_drivable_area_label_in_rgb_image , dsize= ( self.bev_drivable_area_image.shape[1] , self.bev_drivable_area_image.shape[0]) , interpolation=cv2.INTER_NEAREST)
+
+            assert (bev_drivable_area_label_in_lidar_point_visualization_size.shape == self.bev_drivable_area_image.shape)#.all()
+
+            for bev_drivable_area_label_x_coordinate in range( self.bev_drivable_area_image.shape[0] ) :
+
+                for bev_drivable_area_label_y_coordinate in range( self.bev_drivable_area_image.shape[1] ) :
+
+                    if bev_drivable_area_label_in_lidar_point_visualization_size[ bev_drivable_area_label_x_coordinate ][ bev_drivable_area_label_y_coordinate ][0] == 255 :
+
+                        # Then the grid in BEV_Drivabel_Area_Label_X_Coordinate and BEV_Drivable_Area_Label_Y_Coordinate is not DA area
+
+                        bev_drivable_area_label_in_lidar_point_visualization_size[ bev_drivable_area_label_x_coordinate ][ bev_drivable_area_label_y_coordinate ] = self.bev_drivable_area_image[ bev_drivable_area_label_x_coordinate ][ bev_drivable_area_label_y_coordinate ]
+
+
+            self.bev_drivable_area_image = bev_drivable_area_label_in_lidar_point_visualization_size.astype( np.uint8 )
+
+            self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_drivable_area_image )
+
+            # Give notification finished predicting Drivable Area Label in Image
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Finish Copying BEV Drivable Area Label from Previous LiDAR Frame")
+            msg.setText("Succes copied BEV Drivable Area Label from Previous LiDAR Scene" )
+            msg.exec()
+
+
+    def load_bev_drivable_area_label_from_folder( self ) :
+
+        dir_folder_drivable_area_image = "/".join( self.folder.split("/")[ : -1]) + "/BEV_DA_Label_Result_" + str( self.folder.split("/")[-1] )
+
+        #os.makedirs( dir_folder_drivable_area_image , exist_ok= True )
+
+        #dir_drivable_area_image = dir_folder_drivable_area_image + "/" + self.logs[self.cntr]["path"].split("/")[-1]
+
+        name_of_BEV_DA_Label_Frame_dir = dir_folder_drivable_area_image + "/" + self.logs[self.cntr]["path"].split("/")[-1]
+
+        if os.path.exists( name_of_BEV_DA_Label_Frame_dir ) == False :
+
+            QtWidgets.QMessageBox.warning(self, 'Cannot Find BEV Drivable Area Label Image from Folder', 'Please make sure there is BEV Drivable Area Label in Folder ' + str( name_of_BEV_DA_Label_Frame_dir ))
+
+
+        else :
+            # The load BEV DA Label from BEV DA Labelling result folder
+
+            bev_DA_label_from_folder_image = 255 * plt.imread( name_of_BEV_DA_Label_Frame_dir )#.astype( bool )
+
+            bev_DA_label_from_folder_image = np.array( [[True if i[0] > 250 else False for i in j] for j in bev_DA_label_from_folder_image ] )
+
+            self.bev_drivable_area_label = bev_DA_label_from_folder_image #self.previous_frame_drivable_area_image_bev_label
+
+            #print( "BEV DA Label is : " + str( self.bev_drivable_area_label ) + " with BEV DA Label shape : " + str( self.bev_drivable_area_label.shape ) + " with maximum red value in RGB value : " + str( self.bev_drivable_area_label[ : , : , 0].max()))
+
+            bev_drivable_area_label_in_rgb_image = np.array( [[[ 0 , 255 , 0] if i == True else [ 255 , 255 , 255] for i in j] for j in self.bev_drivable_area_label ] ).astype( np.uint8 )
+
+            # Visualize previous BEV DA Label to current LiDAR frame visualization
+
+            bev_drivable_area_label_in_lidar_point_visualization_size = cv2.resize( bev_drivable_area_label_in_rgb_image , dsize= ( self.bev_drivable_area_image.shape[1] , self.bev_drivable_area_image.shape[0]) , interpolation=cv2.INTER_NEAREST)
+
+            assert (bev_drivable_area_label_in_lidar_point_visualization_size.shape == self.bev_drivable_area_image.shape)
+
+            for bev_drivable_area_label_x_coordinate in range( self.bev_drivable_area_image.shape[0] ) :
+
+                for bev_drivable_area_label_y_coordinate in range( self.bev_drivable_area_image.shape[1] ) :
+
+                    if bev_drivable_area_label_in_lidar_point_visualization_size[ bev_drivable_area_label_x_coordinate ][ bev_drivable_area_label_y_coordinate ][0] == 255 :
+
+                        # Then the grid in BEV_Drivabel_Area_Label_X_Coordinate and BEV_Drivable_Area_Label_Y_Coordinate is not DA area
+
+                        bev_drivable_area_label_in_lidar_point_visualization_size[ bev_drivable_area_label_x_coordinate ][ bev_drivable_area_label_y_coordinate ] = self.bev_drivable_area_image[ bev_drivable_area_label_x_coordinate ][ bev_drivable_area_label_y_coordinate ]
+
+
+            self.bev_drivable_area_image = bev_drivable_area_label_in_lidar_point_visualization_size.astype( np.uint8 )
+
+            self.bev_drivable_area_image_viewer.loadImageFromArray( self.bev_drivable_area_image )
+
+            # Give notification finished predicting Drivable Area Label in Image
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle("Finish Loading BEV Drivable Area Label from Folder")
+            msg.setText("Succes loaded BEV Drivable Area Label from Folder : " + str( name_of_BEV_DA_Label_Frame_dir ) )
+            msg.exec()
+
+
+
+
 
         
     def save_drivable_area_label(self) :

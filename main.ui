@@ -802,6 +802,84 @@ color:white;</string>
           </widget>
         </item>
 
+        <item>
+          <widget class="QPushButton" name="copy_BEV_DA_Label_from_Previous_Frame">
+            <property name="font">
+            <font>
+              <pointsize>9</pointsize>
+            </font>
+            </property>
+            <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="autoFillBackground">
+            <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+            <string notr="true">background-color: rgb(100,151,177); /* Blue */
+  padding:10px;
+  color:white;</string>
+            </property>
+            <property name="text">
+            <string>Copy BEV Drivable Area Label from Previous Scene</string>
+            </property>
+            <property name="autoDefault">
+            <bool>false</bool>
+            </property>
+            <property name="default">
+            <bool>false</bool>
+            </property>
+            <property name="flat">
+            <bool>false</bool>
+            </property>
+          </widget>
+        </item>
+
+         <item>
+          <widget class="QPushButton" name="load_BEV_Drivable_Area_Label">
+            <property name="font">
+            <font>
+              <pointsize>9</pointsize>
+            </font>
+            </property>
+            <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="focusPolicy">
+            <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="autoFillBackground">
+            <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+            <string notr="true">background-color: rgb(42, 170, 138); /* Blue */
+  padding:10px;
+  color:white;</string>
+            </property>
+            <property name="text">
+            <string>Load BEV Drivable Area Label</string>
+            </property>
+            <property name="autoDefault">
+            <bool>false</bool>
+            </property>
+            <property name="default">
+            <bool>false</bool>
+            </property>
+            <property name="flat">
+            <bool>false</bool>
+            </property>
+          </widget>
+        </item>
+
 
         <item>
           <widget class="QPushButton" name="save_Drivable_Area_label">
