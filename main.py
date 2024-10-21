@@ -251,6 +251,7 @@ class Iwindow(QtWidgets.QMainWindow, gui):
         self.probability_masks = None
         self.bev_drivable_area_image = None
         self.bev_drivable_area_label = None 
+        self.bev_drivable_area_image_in_rgb_image_without_label = None
 
         self.drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
         self.bev_drivable_area_image_viewer.loadImage(self.logs[self.cntr]['path'])
@@ -895,6 +896,8 @@ class Iwindow(QtWidgets.QMainWindow, gui):
             cv2.imwrite('bev_drivable_area_image_with_LiDAR_visualization.png', bev_drivable_area_image_with_LiDAR_visualization)
 
             #print( "Shape of BEV Drivable Area Image with LiDAR Visualization is : " + str( bev_drivable_area_image_with_LiDAR_visualization.shape ) + " with Data Types : " + str( bev_drivable_area_image_with_LiDAR_visualization ))
+            
+            self.bev_drivable_area_image_in_rgb_image_without_label = bev_drivable_area_image_with_LiDAR_visualization
 
             self.bev_drivable_area_image_viewer.loadImageFromArray( bev_drivable_area_image_with_LiDAR_visualization )
 
@@ -1145,9 +1148,17 @@ class Iwindow(QtWidgets.QMainWindow, gui):
 
                 #print( "Adding bev drivable area label in image from coordinate : {} to coordinate : {}".format( self.add_bev_drivable_area_start_point , [ actual_x_on_image , actual_y_on_image ]))
 
-                new_image_drivable_area_probability_mask_rgb_image = cv2.rectangle(new_image_drivable_area_probability_mask_rgb_image , self.delete_bev_drivable_area_start_point, [actual_x_on_image , actual_y_on_image], color, thickness)
-
                 new_image_drivable_area_probability_mask_rgb_image_DA_label = cv2.rectangle(self.bev_drivable_area_image_in_rgb_image , self.delete_bev_drivable_area_start_point_in_bev_label, [actual_x_on_bev_label_rgb_image, actual_y_on_bev_label_rgb_image], color, thickness)  
+
+                if self.bev_drivable_area_image_in_rgb_image_without_label is not None : 
+                
+                    for bev_drivable_area_coordinate_x in range( new_image_drivable_area_probability_mask_rgb_image.shape[0] ) :
+                        for bev_drivable_area_coordinate_y in range( new_image_drivable_area_probability_mask_rgb_image.shape[1] ) :
+                            # Then visualize LiDAR point clouds and projection DA Label from DA Label camera images to BEV LiDAR visualization without labels
+                            if ( ( new_image_drivable_area_probability_mask_rgb_image[ bev_drivable_area_coordinate_x ][ bev_drivable_area_coordinate_y ][0] == 255 ) & ( new_image_drivable_area_probability_mask_rgb_image[ bev_drivable_area_coordinate_x ][ bev_drivable_area_coordinate_y ][2] == 255 )) :
+                                
+                                new_image_drivable_area_probability_mask_rgb_image[ bev_drivable_area_coordinate_x ][ bev_drivable_area_coordinate_y ] = self.bev_drivable_area_image_in_rgb_image_without_label[ bev_drivable_area_coordinate_x ][ bev_drivable_area_coordinate_y ]
+
 
                 self.bev_drivable_area_image = new_image_drivable_area_probability_mask_rgb_image
 
